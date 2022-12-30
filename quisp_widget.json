@@ -1,0 +1,5 @@
+{
+  "load_extensions": {
+    "quisp_widget/extension": true
+  }
+}
