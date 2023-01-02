@@ -24,3 +24,21 @@ class ExampleWidget(DOMWidget):
     _view_module_version = Unicode(module_version).tag(sync=True)
 
     value = Unicode('Hello World').tag(sync=True)
+
+
+    def __init__(self):
+        super().__init__()
+        self.layout.width = "100%"
+
+    def run(self):
+        self.send({'msg': 'runNormal'})
+
+    def runStep(self):
+        self.send({'msg': 'runStep'})
+
+    def runFast(self):
+        self.send({'msg': 'runFast'})
+
+    def stop(self):
+        self.send({'msg': 'stop'})
+
