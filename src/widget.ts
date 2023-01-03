@@ -13,8 +13,9 @@ import { generateSource } from './iframeContent';
 // Import the CSS
 import '../css/widget.css';
 
-// const baseUrl = "https://aqua.sfc.wide.ad.jp/quisp-online/master/"
-const baseUrl = 'http://localhost:8000/';
+const baseUrl =
+  'https://aqua.sfc.wide.ad.jp/quisp-online/jupyter-quisp-widget/';
+// const baseUrl = 'http://localhost:8000/';
 const wasmUrl = baseUrl + 'quisp.wasm';
 const emscriptenModuleUrl = baseUrl + 'quisp.js';
 const packageDataUrl = baseUrl + 'quisp.data';
@@ -42,6 +43,8 @@ export class QuispIFrameModel extends DOMWidgetModel {
       _view_module: QuispIFrameModel.view_module,
       _view_module_version: QuispIFrameModel.view_module_version,
       value: 'Hello World',
+      iniContent: undefined,
+      nedContent: undefined,
     };
   }
 
@@ -56,17 +59,30 @@ export class QuispIFrameModel extends DOMWidgetModel {
     return null;
   }
 
+  reset() {
+    this.iframe = document.createElement('IFRAME') as HTMLIFrameElement;
+    this.setupIframe();
+  }
+
   setupIframe() {
-    const source = generateSource(wasmUrl, emscriptenModuleUrl, packageDataUrl);
+    const nedContent = this.get('nedContent');
+    const iniContent = this.get('iniContent');
+    const source = generateSource(
+      wasmUrl,
+      emscriptenModuleUrl,
+      packageDataUrl,
+      nedContent,
+      iniContent
+    );
     this.iframe.srcdoc = `<canvas id="main"><script>${source}</script>`;
     this.iframe.style.width = '100%';
-    this.iframe.style.height = '897';
+    this.iframe.style.height = '897px';
   }
 
   handleMessages(content: any) {
     console.log('handle custome message: ', content, this);
-    // @ts-ignore
     const mainWindow =
+      // @ts-ignore
       this.iframe.contentWindow.Module.getQtenv().getMainWindow();
     // @ts-ignore
     const RunMode = this.iframe.contentWindow.Module.RunMode;
@@ -87,6 +103,11 @@ export class QuispIFrameModel extends DOMWidgetModel {
         // @ts-ignore
         mainWindow.stopSimulation();
         break;
+      case 'load':
+        console.log('loading....');
+        this.set('iniContent', content.ini);
+        this.set('nedContent', content.ned);
+        this.setupIframe();
     }
   }
 

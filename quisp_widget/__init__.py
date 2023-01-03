@@ -6,6 +6,8 @@
 
 from .example import ExampleWidget, QuispWidget
 from ._version import __version__, version_info
+from .network import Network
+from .qnode import QNode
 
 def _jupyter_labextension_paths():
     """Called by Jupyter Lab Server to detect if it is a valid labextension and
