@@ -1,10 +1,7 @@
 
 # jupyter-quisp-widget
 
-[![Build Status](https://travis-ci.org/myorg/jupyter-quisp-widget.svg?branch=master)](https://travis-ci.org/myorg/quisp_widget)
-[![codecov](https://codecov.io/gh/myorg/jupyter-quisp-widget/branch/master/graph/badge.svg)](https://codecov.io/gh/myorg/jupyter-quisp-widget)
-
-
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/sfc-aqua/jupyter-quisp-widget/blob/master/examples/introduction.ipynb)
 A Custom Jupyter Widget Library
 
 ## Installation
