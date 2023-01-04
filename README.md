@@ -5,7 +5,7 @@
 [![codecov](https://codecov.io/gh/myorg/jupyter-quisp-widget/branch/master/graph/badge.svg)](https://codecov.io/gh/myorg/jupyter-quisp-widget)
 
 
-A Custom Jupyter Widget Library
+A Jupyter Widget Library for Running QuISP
 
 ## Installation
 

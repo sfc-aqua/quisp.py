@@ -6,7 +6,7 @@ Developer install
 To install a developer version of quisp_widget, you will first need to clone
 the repository::
 
-    git clone https://github.com/myorg/jupyter-quisp-widget
+    git clone https://github.com/sfc-aqua/jupyter-quisp-widget
     cd jupyter-quisp-widget
 
 Next, install it with a develop install using pip::
