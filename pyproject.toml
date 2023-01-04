@@ -55,7 +55,7 @@ test = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/myorg/jupyter-quisp-widget"
+Homepage = "https://github.com/sfc-aqua/jupyter-quisp-widget"
 
 [tool.hatch.build]
 artifacts = [
