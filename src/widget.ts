@@ -20,6 +20,14 @@ const wasmUrl = baseUrl + 'quisp.wasm';
 const emscriptenModuleUrl = baseUrl + 'quisp.js';
 const packageDataUrl = baseUrl + 'quisp.data';
 
+const readFile = (fs: any, filename: string): string | null => {
+  try {
+    return fs.readFile(filename, { encoding: 'utf8' });
+  } catch {
+    return null;
+  }
+};
+
 export class QuispIFrameModel extends DOMWidgetModel {
   iframe: HTMLIFrameElement = document.createElement(
     'IFRAME'
@@ -108,6 +116,18 @@ export class QuispIFrameModel extends DOMWidgetModel {
         this.set('iniContent', content.ini);
         this.set('nedContent', content.ned);
         this.setupIframe();
+        break;
+      case 'readResult':
+        // @ts-ignore
+        const FS = this.iframe.contentWindow.FS;
+        // @ts-ignore
+        const jsonl = readFile(FS, '/result.jsonl');
+        // @ts-ignore
+        const output = readFile(FS, '/result.output');
+        this.send({ jsonl, output }, (m: any) =>
+          console.log('model load callback', m)
+        );
+        break;
     }
   }
 
@@ -126,15 +146,15 @@ export class QuispIFrameModel extends DOMWidgetModel {
 
 export class QuispIFrameView extends DOMWidgetView {
   model: QuispIFrameModel;
-  initialize() {
-    console.log('initialize', this);
-  }
+  initialize() {}
+
   render() {
     this.el.classList.add('custom-widget');
     if (this.el.children.length == 0) {
       const iframe = this.model.useIframe(this.cid);
       if (iframe) {
         this.el.appendChild(iframe);
+        this.model.send({ state_change: 'rendered' }, () => {});
       } else {
         this.el.textContent = 'see other view';
       }

@@ -8,7 +8,7 @@
 TODO: Add module docstring
 """
 
-from ipywidgets import DOMWidget
+from ipywidgets import DOMWidget, CallbackDispatcher
 from traitlets import Unicode
 from ._frontend import module_name, module_version
 
@@ -28,6 +28,16 @@ class QuispWidget(DOMWidget):
     def __init__(self):
         super().__init__()
         self.layout.width = "100%"
+        self.jsonl = None
+        self.output = None
+        self.on_msg(self.callback, remove=False)
+
+    def callback(self, widget, content, buffers):
+        if 'jsonl' in content:
+            self.jsonl = content['jsonl']
+        if 'output' in content:
+            self.output= content['output']
+
 
     def run(self):
         self.send({"msg": "runNormal"})
@@ -45,6 +55,9 @@ class QuispWidget(DOMWidget):
         inifile = self.generate_ini_file(network.name)
         self.send({"msg": "load", "ned": network.dump(), "ini": inifile})
 
+    def readResult(self):
+        self.send({"msg": "readResult"})
+
     def generate_ini_file(self, network_name: str) -> str:
         config_name = "Custom"
         return f"""
@@ -53,7 +66,9 @@ seed-set = \\${{runnumber}}
 sim-time-limit = 100s
 
 image-path = "./quisp/images"
-**.logger.log_filename = "\\${{resultdir}}/\\${{configname}}-\\${{runnumber}}.jsonl"
+**.logger.log_filename = "/result.jsonl"
+**.tomography_output_filename = "/result.output"
+**.speed_of_light_in_fiber = 205336.986301 km
 
 **.h_gate_error_rate = 1/2000
 **.h_gate_x_error_ratio = 0
@@ -106,7 +121,6 @@ seed-set = 0
 **.number_of_bellpair = 7000
 **.buffers = 100
 
-**.tomography_output_filename = "{config_name}"
 
 
 **.emission_success_probability = 0.46*0.49

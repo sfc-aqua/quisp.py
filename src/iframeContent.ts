@@ -5,7 +5,9 @@ sim-time-limit = 100s
 # Qnic
 #**.buffers = intuniform(7,7)
 image-path = "./quisp/images"
-**.logger.log_filename = "\\\${resultdir}/\\\${configname}-\\\${runnumber}.jsonl"
+#**.logger.log_filename = "\\\${resultdir}/\\\${configname}-\\\${runnumber}.jsonl"
+**.logger.log_filename = "/result.jsonl"
+**.tomography_output_filename = "/result.output"
 
 **.h_gate_error_rate = 1/2000
 **.h_gate_x_error_ratio = 0
@@ -61,7 +63,6 @@ seed-set = 0
 **.number_of_bellpair = 7000
 **.buffers = 100
 
-**.tomography_output_filename = "Custom"
 
 
 **.emission_success_probability = 0.46*0.49
