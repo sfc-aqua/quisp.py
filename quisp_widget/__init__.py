@@ -8,6 +8,8 @@ from .widget import QuispWidget
 from ._version import __version__, version_info
 from .network import Network
 from .qnode import QNode
+from .types import LinkType
+from .channel import ChannelOption
 
 def _jupyter_labextension_paths():
     """Called by Jupyter Lab Server to detect if it is a valid labextension and

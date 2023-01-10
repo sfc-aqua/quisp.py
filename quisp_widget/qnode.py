@@ -1,5 +1,5 @@
-from typing import TYPE_CHECKING, List
-from .channel import ClassicalChannel, QuantumChannel
+from typing import TYPE_CHECKING, List, Optional
+from .channel import ClassicalChannel, QuantumChannel, ChannelOption
 
 if TYPE_CHECKING:
     from .network import Network
@@ -20,6 +20,8 @@ class QNode:
         self.network.add_qnode(self)
         self.is_initiator = is_initiator
 
-    def connect(self, qnode: "QNode") -> None:
-        self.network.add_classical_channel(ClassicalChannel(self, qnode))
-        self.network.add_quantum_channel(QuantumChannel(self, qnode))
+    def connect(self, qnode: "QNode", option: "Optional[ChannelOption]" = None) -> None:
+        if option is None:
+            option = ChannelOption()
+        self.network.add_classical_channel(ClassicalChannel(self, qnode, option))
+        self.network.add_quantum_channel(QuantumChannel(self, qnode, option))
