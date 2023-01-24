@@ -9,4 +9,4 @@ coverage:
       default:
         target: 0%
 ignore:
-  - "quisp_widget/tests"
+  - "quisp/tests"

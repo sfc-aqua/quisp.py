@@ -8,5 +8,5 @@
 Information about the frontend package of the widgets.
 """
 
-module_name = "jupyter-quisp-widget"
+module_name = "quisp"
 module_version = "^0.1.0"

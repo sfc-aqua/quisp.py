@@ -27,7 +27,7 @@ module.exports = [
     entry: './src/extension.ts',
     output: {
       filename: 'index.js',
-      path: path.resolve(__dirname, 'quisp_widget', 'nbextension'),
+      path: path.resolve(__dirname, 'quisp', 'nbextension'),
       libraryTarget: 'amd',
       publicPath: '',
     },
@@ -40,7 +40,7 @@ module.exports = [
   },
 
   /**
-   * Embeddable jupyter-quisp-widget bundle
+   * Embeddable quisp bundle
    *
    * This bundle is almost identical to the notebook extension bundle. The only
    * difference is in the configuration of the webpack public path for the
@@ -55,8 +55,8 @@ module.exports = [
         filename: 'index.js',
         path: path.resolve(__dirname, 'dist'),
         libraryTarget: 'amd',
-        library: "jupyter-quisp-widget",
-        publicPath: 'https://unpkg.com/jupyter-quisp-widget@' + version + '/dist/'
+        library: "quisp",
+        publicPath: 'https://unpkg.com/quisp@' + version + '/dist/'
     },
     devtool: 'source-map',
     module: {
@@ -77,7 +77,7 @@ module.exports = [
     output: {
       filename: 'embed-bundle.js',
       path: path.resolve(__dirname, 'docs', 'source', '_static'),
-      library: "jupyter-quisp-widget",
+      library: "quisp",
       libraryTarget: 'amd'
     },
     module: {

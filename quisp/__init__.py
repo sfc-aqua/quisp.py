@@ -25,7 +25,7 @@ def _jupyter_labextension_paths():
     """
     return [{
         'src': 'labextension',
-        'dest': 'jupyter-quisp-widget',
+        'dest': 'quisp',
     }]
 
 
@@ -48,6 +48,6 @@ def _jupyter_nbextension_paths():
     return [{
         'section': 'notebook',
         'src': 'nbextension',
-        'dest': 'quisp_widget',
-        'require': 'quisp_widget/extension'
+        'dest': 'quisp',
+        'require': 'quisp/extension'
     }]

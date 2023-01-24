@@ -6,7 +6,7 @@ requires = [
 build-backend = "hatchling.build"
 
 [project]
-name = "quisp_widget"
+name = "quisp"
 version = "0.1.0.dev1"
 description = "A Custom Jupyter Widget Library"
 readme = "README.md"
@@ -55,20 +55,20 @@ test = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/sfc-aqua/jupyter-quisp-widget"
+Homepage = "https://github.com/sfc-aqua/quisp.py"
 
 [tool.hatch.build]
 artifacts = [
-    "quisp_widget/nbextension/index.*",
-    "quisp_widget/labextension/*.tgz",
-    "quisp_widget/labextension",
+    "quisp/nbextension/index.*",
+    "quisp/labextension/*.tgz",
+    "quisp/labextension",
 ]
 
 [tool.hatch.build.targets.wheel.shared-data]
-"quisp_widget/nbextension" = "share/jupyter/nbextensions/quisp_widget"
-"quisp_widget/labextension" = "share/jupyter/labextensions/quisp_widget"
-"./install.json" = "share/jupyter/labextensions/quisp_widget/install.json"
-"./quisp_widget.json" = "etc/jupyter/nbconfig/notebook.d/quisp_widget.json"
+"quisp/nbextension" = "share/jupyter/nbextensions/quisp"
+"quisp/labextension" = "share/jupyter/labextensions/quisp"
+"./install.json" = "share/jupyter/labextensions/quisp/install.json"
+"./quisp.json" = "etc/jupyter/nbconfig/notebook.d/quisp.json"
 
 [tool.hatch.build.targets.sdist]
 exclude = [
@@ -78,12 +78,12 @@ exclude = [
 [tool.hatch.build.hooks.jupyter-builder]
 build-function = "hatch_jupyter_builder.npm_builder"
 ensured-targets = [
-    "quisp_widget/nbextension/index.js",
-    "quisp_widget/labextension/package.json",
+    "quisp/nbextension/index.js",
+    "quisp/labextension/package.json",
 ]
 skip-if-exists = [
-    "quisp_widget/nbextension/index.js",
-    "quisp_widget/labextension/package.json",
+    "quisp/nbextension/index.js",
+    "quisp/labextension/package.json",
 ]
 dependencies = [
     "hatch-jupyter-builder>=0.5.0",
@@ -100,7 +100,7 @@ field = [
 ]
 file = [
     { src = "pyproject.toml", version_template = "version = \"{major}.{minor}.{patch}{channel}{release}\"" },
-    { src = "quisp_widget/_version.py" },
+    { src = "quisp/_version.py" },
 ]
 
 [tool.tbump.version]

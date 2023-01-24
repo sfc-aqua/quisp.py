@@ -1,5 +1,5 @@
 
-quisp_widget
+quisp
 =====================================
 
 Version: |release|
@@ -10,13 +10,13 @@ A Custom Jupyter Widget Library
 Quickstart
 ----------
 
-To get started with quisp_widget, install with pip::
+To get started with quisp, install with pip::
 
-    pip install quisp_widget
+    pip install quisp
 
 or with conda::
 
-    conda install quisp_widget
+    conda install quisp
 
 
 Contents

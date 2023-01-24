@@ -6,7 +6,7 @@ define(function() {
     window['requirejs'].config({
         map: {
             '*': {
-                'jupyter-quisp-widget': 'nbextensions/quisp_widget/index',
+                'quisp': 'nbextensions/quisp/index',
             },
         }
     });

@@ -1,8 +1,8 @@
 
-# jupyter-quisp-widget
+# quisp.py
 
-[![Build Status](https://travis-ci.org/myorg/jupyter-quisp-widget.svg?branch=master)](https://travis-ci.org/myorg/quisp_widget)
-[![codecov](https://codecov.io/gh/myorg/jupyter-quisp-widget/branch/master/graph/badge.svg)](https://codecov.io/gh/myorg/jupyter-quisp-widget)
+[![Build Status](https://travis-ci.org/myorg/quisp.py.svg?branch=master)](https://travis-ci.org/myorg/quisp)
+[![codecov](https://codecov.io/gh/myorg/quisp.py/branch/master/graph/badge.svg)](https://codecov.io/gh/myorg/quisp.py)
 
 
 A Jupyter Widget Library for Running QuISP
@@ -12,21 +12,21 @@ A Jupyter Widget Library for Running QuISP
 You can install using `pip`:
 
 ```bash
-pip install quisp_widget
+pip install quisp
 ```
 
 If you are using Jupyter Notebook 5.2 or earlier, you may also need to enable
 the nbextension:
 ```bash
-jupyter nbextension enable --py [--sys-prefix|--user|--system] quisp_widget
+jupyter nbextension enable --py [--sys-prefix|--user|--system] quisp
 ```
 
 ## Development Installation
 
 Create a dev environment:
 ```bash
-conda create -n quisp_widget-dev -c conda-forge nodejs yarn python jupyterlab
-conda activate quisp_widget-dev
+conda create -n quisp-dev -c conda-forge nodejs yarn python jupyterlab
+conda activate quisp-dev
 ```
 
 Install the python. This will also build the TS package.
@@ -45,8 +45,8 @@ yarn run build
 For classic notebook, you need to run:
 
 ```
-jupyter nbextension install --sys-prefix --symlink --overwrite --py quisp_widget
-jupyter nbextension enable --sys-prefix --py quisp_widget
+jupyter nbextension install --sys-prefix --symlink --overwrite --py quisp
+jupyter nbextension enable --sys-prefix --py quisp
 ```
 
 Note that the `--symlink` flag doesn't work on Windows, so you will here have to run

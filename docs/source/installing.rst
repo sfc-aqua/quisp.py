@@ -5,27 +5,27 @@ Installation
 ============
 
 
-The simplest way to install quisp_widget is via pip::
+The simplest way to install quisp is via pip::
 
-    pip install quisp_widget
+    pip install quisp
 
 or via conda::
 
-    conda install quisp_widget
+    conda install quisp
 
 
 If you installed via pip, and notebook version < 5.3, you will also have to
 install / configure the front-end extension as well. If you are using classic
 notebook (as opposed to Jupyterlab), run::
 
-    jupyter nbextension install [--sys-prefix / --user / --system] --py quisp_widget
+    jupyter nbextension install [--sys-prefix / --user / --system] --py quisp
 
-    jupyter nbextension enable [--sys-prefix / --user / --system] --py quisp_widget
+    jupyter nbextension enable [--sys-prefix / --user / --system] --py quisp
 
 with the `appropriate flag`_. If you are using Jupyterlab, install the extension
 with::
 
-    jupyter labextension install jupyter-quisp-widget
+    jupyter labextension install quisp
 
 If you are installing using conda, these commands should be unnecessary, but If
 you need to run them the commands should be the same (just make sure you choose the
