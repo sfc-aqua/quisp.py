@@ -25,3 +25,12 @@ class QNode:
             option = ChannelOption()
         self.network.add_classical_channel(ClassicalChannel(self, qnode, option))
         self.network.add_quantum_channel(QuantumChannel(self, qnode, option))
+
+    def dump(self) -> str:
+        return f"""
+        {self.name}: QNode {{
+            address = {self.addr};
+            node_type = "EndNode";
+            @display("i=COMP");
+            is_initiator = {"true" if self.is_initiator else "false"};
+        }}"""

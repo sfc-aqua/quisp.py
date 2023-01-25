@@ -32,16 +32,9 @@ class Network:
             qnode.addr = len(self.qnodes)
 
     def dump_qnodes(self) -> str:
-
         ned_str = ""
         for qnode in self.qnodes:
-            ned_str += f"""
-        {qnode.name}: QNode {{
-            address = {qnode.addr};
-            node_type = "EndNode";
-            @display("i=COMP");
-            is_initiator = {"true" if qnode.is_initiator else "false"};
-        }}"""
+            ned_str += qnode.dump()
 
         for c in self.quantum_channels:
             if c.option.link_type is LinkType.MIM:
