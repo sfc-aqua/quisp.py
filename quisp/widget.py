@@ -11,10 +11,10 @@ from ipywidgets import DOMWidget, CallbackDispatcher
 from typing import TYPE_CHECKING, Optional
 from traitlets import Unicode
 from ._frontend import module_name, module_version
-from .config import Config
+from .planner import Config
 
 if TYPE_CHECKING:
-    from .network import Network
+    from .planner import Network
 
 
 class QuispWidget(DOMWidget):

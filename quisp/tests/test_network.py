@@ -51,4 +51,3 @@ network SimpleTestNetwork {
 }
 """
     assert network.dump() == expected
-

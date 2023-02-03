@@ -6,10 +6,8 @@
 
 from .widget import QuispWidget
 from ._version import __version__, version_info
-from .network import Network
-from .qnode import QNode
-from .types import LinkType
-from .channel import ChannelOption
+from .planner import Network, QNode, LinkType, ChannelOption
+
 
 def _jupyter_labextension_paths():
     """Called by Jupyter Lab Server to detect if it is a valid labextension and
@@ -23,10 +21,12 @@ def _jupyter_labextension_paths():
         from `src` directory into <jupyter path>/labextensions/<dest> directory
         during widget installation
     """
-    return [{
-        'src': 'labextension',
-        'dest': 'quisp',
-    }]
+    return [
+        {
+            "src": "labextension",
+            "dest": "quisp",
+        }
+    ]
 
 
 def _jupyter_nbextension_paths():
@@ -45,9 +45,11 @@ def _jupyter_nbextension_paths():
     require: Path to importable AMD Javascript module inside the
         <jupyter path>/nbextensions/<dest> directory
     """
-    return [{
-        'section': 'notebook',
-        'src': 'nbextension',
-        'dest': 'quisp',
-        'require': 'quisp/extension'
-    }]
+    return [
+        {
+            "section": "notebook",
+            "src": "nbextension",
+            "dest": "quisp",
+            "require": "quisp/extension",
+        }
+    ]
