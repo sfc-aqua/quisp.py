@@ -20,12 +20,21 @@ const wasmUrl = baseUrl + 'quisp.wasm';
 const emscriptenModuleUrl = baseUrl + 'quisp.js';
 const packageDataUrl = baseUrl + 'quisp.data';
 
-const readFile = (fs: any, filename: string): string | null => {
-  try {
-    return fs.readFile(filename, { encoding: 'utf8' });
-  } catch {
-    return null;
-  }
+const readFile = (w: any, filename: string): Promise<string | null> => {
+  return new Promise((res, rej) => {
+    try {
+      w.postMessage({ command: 'readFile', args: { filename } });
+      const f = (e: any) => {
+        console.log('widget receive message', e);
+        window.removeEventListener('message', f);
+        res(e.data.result);
+      };
+      window.addEventListener('message', f);
+    } catch (e) {
+      console.error(e);
+      rej(e);
+    }
+  });
 };
 
 export class QuispIFrameModel extends DOMWidgetModel {
@@ -87,7 +96,7 @@ export class QuispIFrameModel extends DOMWidgetModel {
     this.iframe.style.height = '897px';
   }
 
-  handleMessages(content: any) {
+  async handleMessages(content: any) {
     console.log('handle custome message: ', content, this);
     const mainWindow =
       // @ts-ignore
@@ -121,9 +130,15 @@ export class QuispIFrameModel extends DOMWidgetModel {
         // @ts-ignore
         const FS = this.iframe.contentWindow.FS;
         // @ts-ignore
-        const jsonl = readFile(FS, '/result.jsonl');
+        const jsonl = await readFile(
+          this.iframe.contentWindow,
+          '/result.jsonl'
+        );
         // @ts-ignore
-        const output = readFile(FS, '/result.output');
+        const output = await readFile(
+          this.iframe.contentWindow,
+          '/result.output'
+        );
         this.send({ jsonl, output }, (m: any) =>
           console.log('model load callback', m)
         );

@@ -191,4 +191,18 @@ export const generateSource = (
       function loadPackageData() {
         return fetch("${packageDataUrl}").then((r) => r.arrayBuffer());
       }
+      function readFile(filename) {
+        try {
+          return FS.readFile(filename, { encoding: 'utf8' });
+        } catch {
+          return null;
+        }
+      };
+      window.addEventListener("message", (e) => {
+        console.log("iframe handle message: ", e);
+        if (e.data && e.data.command === "readFile") {
+          const f = readFile(e.data.args.filename)
+          e.source.postMessage({command: "readFile", result: f});
+        }
+      });
     `;
