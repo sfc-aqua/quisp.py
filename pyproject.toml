@@ -102,6 +102,8 @@ field = [
 file = [
     { src = "pyproject.toml", version_template = "version = \"{major}.{minor}.{patch}{channel}{release}\"" },
     { src = "quisp/_version.py" },
+    { src = "quisp/_frontend.py", search = 'module_version = "{current_version}"' },
+    { src = "package.json", search = '"version": "{current_version}"'}
 ]
 
 [tool.tbump.version]
