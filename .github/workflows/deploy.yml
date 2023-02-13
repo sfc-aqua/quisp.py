@@ -24,6 +24,8 @@ jobs:
           --wheel
           --outdir dist/
           .
+      - name: remove index.js from dist
+        run: rm dist/index.js*
       - name: Publish distribution 📦 to Test PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
