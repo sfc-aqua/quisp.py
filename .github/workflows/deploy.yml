@@ -10,6 +10,10 @@ jobs:
         uses: actions/setup-python@v3
         with:
           python-version: "3.10"
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16.x'
+          registry-url: 'https://registry.npmjs.org'
       - name: Install pypa/build
         run: >-
           python -m
@@ -24,6 +28,9 @@ jobs:
           --wheel
           --outdir dist/
           .
+      - run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: remove index.js from dist
         run: rm dist/index.js*
       - name: Publish distribution 📦 to Test PyPI
