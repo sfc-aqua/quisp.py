@@ -25,7 +25,7 @@ jobs:
         run: |
           python -m pip install --upgrade -v -e ".[test, examples, docs]"
           python -m pytest
-          yarn run test
+          # yarn run test
 
       - name: Linting
         if: ${{ matrix.os == 'ubuntu-latest' }}

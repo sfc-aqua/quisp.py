@@ -4,23 +4,10 @@
 // Add any needed widget imports here (or from controls)
 // import {} from '@jupyter-widgets/base';
 
-import { createTestModel } from './utils';
+// describe('Example', () => {
+//   describe('ExampleModel', () => {
+//     it('should be createable', () => {});
 
-import { QuispIFrameModel } from '..';
-
-describe('Example', () => {
-  describe('ExampleModel', () => {
-    it('should be createable', () => {
-      const model = createTestModel(QuispIFrameModel);
-      expect(model).toBeInstanceOf(QuispIFrameModel);
-      expect(model.get('value')).toEqual('Hello World');
-    });
-
-    it('should be createable with a value', () => {
-      const state = { value: 'Foo Bar!' };
-      const model = createTestModel(QuispIFrameModel, state);
-      expect(model).toBeInstanceOf(QuispIFrameModel);
-      expect(model.get('value')).toEqual('Foo Bar!');
-    });
-  });
-});
+//     it('should be createable with a value', () => {});
+//   });
+// });

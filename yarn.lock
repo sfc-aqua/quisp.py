@@ -1253,23 +1253,7 @@
     base64-js "^1.2.1"
     sanitize-html "^2.3"
 
-"@jupyter-widgets/base@^1.1.10 || ^2 || ^3 || ^4 || ^5 || ^6":
-  version "4.1.2"
-  resolved "https://registry.yarnpkg.com/@jupyter-widgets/base/-/base-4.1.2.tgz#b0b1d94232b8e54c77d11c21de4127ca2e22fd69"
-  integrity sha512-URaQ6rUR0ZC1G1g0pSZHcV8W9x5pK/FnC/zSF5/i2QHmjLVfwVRBFt7a8VL88xZG8V4G8tOIDZTTg1NZcHfB0A==
-  dependencies:
-    "@jupyterlab/services" "^6.0.0"
-    "@lumino/coreutils" "^1.2.0"
-    "@lumino/messaging" "^1.2.1"
-    "@lumino/widgets" "^1.3.0"
-    "@types/backbone" "^1.4.1"
-    "@types/lodash" "^4.14.134"
-    backbone "1.2.3"
-    base64-js "^1.2.1"
-    jquery "^3.1.1"
-    lodash "^4.17.4"
-
-"@jupyter-widgets/base@^6.0.2":
+"@jupyter-widgets/base@6.0.2", "@jupyter-widgets/base@^6.0.2":
   version "6.0.2"
   resolved "https://registry.yarnpkg.com/@jupyter-widgets/base/-/base-6.0.2.tgz#ee6e614eb70f2593fce61eea8731217d869c5a2a"
   integrity sha512-CIVjSTrqQFzkg9VCdDjrjDqwbba3eZfNigCPFSuKmMVXc+ATAOFczOv9/9uaCPzQ+E+0g6SOLhJ25SpKB0cl9g==
@@ -1432,7 +1416,7 @@
     "@lumino/signaling" "^1.11.1"
     "@lumino/virtualdom" "^1.14.3"
 
-"@lumino/coreutils@^1.11.0", "@lumino/coreutils@^1.11.1", "@lumino/coreutils@^1.12.1", "@lumino/coreutils@^1.2.0":
+"@lumino/coreutils@^1.11.0", "@lumino/coreutils@^1.11.1", "@lumino/coreutils@^1.12.1":
   version "1.12.1"
   resolved "https://registry.yarnpkg.com/@lumino/coreutils/-/coreutils-1.12.1.tgz#79860c9937483ddf6cda87f6c2b9da8eb1a5d768"
   integrity sha512-JLu3nTHzJk9N8ohZ85u75YxemMrmDzJdNgZztfP7F7T7mxND3YVNCkJG35a6aJ7edu1sIgCjBxOvV+hv27iYvQ==
@@ -1463,7 +1447,7 @@
   resolved "https://registry.yarnpkg.com/@lumino/keyboard/-/keyboard-1.8.2.tgz#714dbe671f0718f516d1ec23188b31a9ccd82fb2"
   integrity sha512-Dy+XqQ1wXbcnuYtjys5A0pAqf4SpAFl9NY6owyIhXAo0Va7w3LYp3jgiP1xAaBAwMuUppiUAfrbjrysZuZ625g==
 
-"@lumino/messaging@^1.10.0", "@lumino/messaging@^1.10.1", "@lumino/messaging@^1.10.3", "@lumino/messaging@^1.2.1":
+"@lumino/messaging@^1.10.0", "@lumino/messaging@^1.10.1", "@lumino/messaging@^1.10.3":
   version "1.10.3"
   resolved "https://registry.yarnpkg.com/@lumino/messaging/-/messaging-1.10.3.tgz#b6227bdfc178a8542571625ecb68063691b6af3c"
   integrity sha512-F/KOwMCdqvdEG8CYAJcBSadzp6aI7a47Fr60zAKGqZATSRRRV41q53iXU7HjFPqQqQIvdn9Z7J32rBEAyQAzww==
@@ -1500,7 +1484,7 @@
   dependencies:
     "@lumino/algorithm" "^1.9.2"
 
-"@lumino/widgets@^1.3.0", "@lumino/widgets@^1.30.0", "@lumino/widgets@^1.37.1", "@lumino/widgets@^1.6.0":
+"@lumino/widgets@^1.30.0", "@lumino/widgets@^1.37.1", "@lumino/widgets@^1.6.0":
   version "1.37.1"
   resolved "https://registry.yarnpkg.com/@lumino/widgets/-/widgets-1.37.1.tgz#d7a2398b276e15e60aff4fec58c035d46549a75b"
   integrity sha512-/whz5B/hL0fjv0bR8JYZ+Emx+CH7HBwXc4TqI9PrrHGm3g6+jRJAyIFGZcQubqkPxxHrRE/VxQgoDKGhINw/Gw==
@@ -1610,14 +1594,6 @@
   version "1.4.14"
   resolved "https://registry.yarnpkg.com/@types/backbone/-/backbone-1.4.14.tgz#4b71f0c25d89cfa9a10b18042f0b03d35a53364c"
   integrity sha512-85ldQ99fiYTJFBlZuAJRaCdvTZKZ2p1fSs3fVf+6Ub6k1X0g0hNJ0qJ/2FOByyyAQYLtbEz3shX5taKQfBKBDw==
-  dependencies:
-    "@types/jquery" "*"
-    "@types/underscore" "*"
-
-"@types/backbone@^1.4.1":
-  version "1.4.15"
-  resolved "https://registry.yarnpkg.com/@types/backbone/-/backbone-1.4.15.tgz#505323ab8fea11ecaec74cb3f73d569a4e5eb779"
-  integrity sha512-WWeKtYlsIMtDyLbbhkb96taJMEbfQBnuz7yw1u0pkphCOtksemoWhIXhK74VRCY9hbjnsH3rsJu2uUiFtnsEYg==
   dependencies:
     "@types/jquery" "*"
     "@types/underscore" "*"
@@ -2199,13 +2175,6 @@ babel-preset-jest@^29.4.2:
   dependencies:
     babel-plugin-jest-hoist "^29.4.2"
     babel-preset-current-node-syntax "^1.0.0"
-
-backbone@1.2.3:
-  version "1.2.3"
-  resolved "https://registry.yarnpkg.com/backbone/-/backbone-1.2.3.tgz#c22cfd07fc86ebbeae61d18929ed115e999d65b9"
-  integrity sha512-1/eXj4agG79UDN7TWnZXcGD6BJrBwLZKCX7zYcBIy9jWf4mrtVkw7IE1VOYFnrKahsmPF9L55Tib9IQRvk027w==
-  dependencies:
-    underscore ">=1.7.0"
 
 backbone@1.4.0:
   version "1.4.0"
@@ -5408,7 +5377,7 @@ unbox-primitive@^1.0.2:
     has-symbols "^1.0.3"
     which-boxed-primitive "^1.0.2"
 
-underscore@>=1.7.0, underscore@>=1.8.3:
+underscore@>=1.8.3:
   version "1.13.6"
   resolved "https://registry.yarnpkg.com/underscore/-/underscore-1.13.6.tgz#04786a1f589dc6c09f761fc5f45b89e935136441"
   integrity sha512-+A5Sja4HP1M08MaXya7p5LvjuM7K6q/2EaC0+iovj/wOcMsTzMvDFbasi/oSapiwOlt252IqsKqPjCl7huKS0A==
