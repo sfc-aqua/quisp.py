@@ -1,7 +1,7 @@
 import pytest
 
-from ..network import Network
-from ..qnode import QNode
+from ..planner.network import Network
+from ..planner.qnode import QNode
 
 
 def test_simple_network():
