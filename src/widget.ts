@@ -48,6 +48,17 @@ export class QuispIFrameModel extends DOMWidgetModel {
   ) {
     super(attributes, options);
     this.on('msg:custom', this.handleMessages, this);
+    window.addEventListener('message', (e) => {
+      const data = e.data;
+      if (data.id !== this.model_id) {
+        return;
+      }
+      console.log('receive from iframe:', data);
+      if (data.command === 'qtenvReady') {
+        this.set('qtenv_ready', true);
+        this.save_changes();
+      }
+    });
   }
   defaults() {
     return {
@@ -61,6 +72,8 @@ export class QuispIFrameModel extends DOMWidgetModel {
       value: 'Hello World',
       iniContent: undefined,
       nedContent: undefined,
+      qtenv_ready: false,
+      is_gui: true,
     };
   }
 
@@ -81,9 +94,11 @@ export class QuispIFrameModel extends DOMWidgetModel {
   }
 
   setupIframe() {
+    console.log('setupIframe: ', this.model_id);
     const nedContent = this.get('nedContent');
     const iniContent = this.get('iniContent');
     const source = generateSource(
+      this.model_id,
       wasmUrl,
       emscriptenModuleUrl,
       packageDataUrl,
@@ -93,6 +108,8 @@ export class QuispIFrameModel extends DOMWidgetModel {
     this.iframe.srcdoc = `<canvas id="main"><script>${source}</script>`;
     this.iframe.style.width = '100%';
     this.iframe.style.height = '897px';
+    this.set('qtenv_ready', false);
+    this.save_changes();
   }
 
   async handleMessages(content: any) {
@@ -118,9 +135,9 @@ export class QuispIFrameModel extends DOMWidgetModel {
         mainWindow.stopSimulation();
         break;
       case 'load':
-        console.log('loading....');
         this.set('iniContent', content.ini);
         this.set('nedContent', content.ned);
+        this.save_changes();
         this.setupIframe();
         break;
       case 'readResult': {
@@ -149,9 +166,6 @@ export class QuispIFrameModel extends DOMWidgetModel {
 
 export class QuispIFrameView extends DOMWidgetView {
   model: QuispIFrameModel;
-  initialize() {
-    console.log('view initialized');
-  }
 
   render() {
     this.el.classList.add('custom-widget');

@@ -93,12 +93,14 @@ seed-set = 0
 **.purification_type = 1001`;
 
 export const generateSource = (
+  model_id: string,
   wasmUrl: string,
   emscriptenModuleUrl: string,
   packageDataUrl: string,
   nedContent = '',
   iniContent: string = DEFAULT_INI_CONTENT
 ) => `
+      const model_id = '${model_id}';
       window.qtenvSkipRunSelection = true;
       const nedContent = \`${nedContent}\`;
       const iniContent = \`${iniContent}\`;
@@ -151,7 +153,8 @@ export const generateSource = (
             console.log(this);
             window.qtenv = window.Module.getQtenv();
             window.mainWindow = window.qtenv.getMainWindow();
-            console.log('qtenv ready');
+            console.log('qtenv ready', window.parent);
+            window.parent.postMessage({command: "qtenvReady", id: model_id})
           }
         }, 100);
         const args = [
@@ -202,7 +205,7 @@ export const generateSource = (
         console.log("iframe handle message: ", e);
         if (e.data && e.data.command === "readFile") {
           const f = readFile(e.data.args.filename)
-          e.source.postMessage({command: "readFile", result: f});
+          e.source.postMessage({command: "readFile", result: f, id: model_id});
         }
       });
     `;
