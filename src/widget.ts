@@ -20,7 +20,7 @@ const wasmUrl = baseUrl + 'quisp.wasm';
 const emscriptenModuleUrl = baseUrl + 'quisp.js';
 const packageDataUrl = baseUrl + 'quisp.data';
 
-const readFile = (w: any, filename: string): Promise<string | null> => {
+const readFile = (w: Window, filename: string): Promise<string | null> => {
   return new Promise((res, rej) => {
     try {
       w.postMessage({ command: 'readFile', args: { filename } });
@@ -47,7 +47,6 @@ export class QuispIFrameModel extends DOMWidgetModel {
     options?: CombinedModelConstructorOptions<any>
   ) {
     super(attributes, options);
-    // @ts-ignore
     this.on('msg:custom', this.handleMessages, this);
   }
   defaults() {
@@ -98,26 +97,24 @@ export class QuispIFrameModel extends DOMWidgetModel {
 
   async handleMessages(content: any) {
     console.log('handle custome message: ', content, this);
-    const mainWindow =
-      // @ts-ignore
-      this.iframe.contentWindow.Module.getQtenv().getMainWindow();
-    // @ts-ignore
-    const RunMode = this.iframe.contentWindow.Module.RunMode;
+    const iframeWindow = this.iframe.contentWindow;
+    if (!iframeWindow) {
+      console.error('iframe window is null');
+      return;
+    }
+    const mainWindow = iframeWindow.Module.getQtenv().getMainWindow();
+    const RunMode = iframeWindow.Module.RunMode;
     switch (content.msg) {
       case 'runNormal':
-        // @ts-ignore
         mainWindow.runSimulation(RunMode.NORMAL);
         break;
       case 'runStep':
-        // @ts-ignore
         mainWindow.runSimulation(RunMode.STEP);
         break;
       case 'runFast':
-        // @ts-ignore
         mainWindow.runSimulation(RunMode.FAST);
         break;
       case 'stop':
-        // @ts-ignore
         mainWindow.stopSimulation();
         break;
       case 'load':
@@ -126,23 +123,14 @@ export class QuispIFrameModel extends DOMWidgetModel {
         this.set('nedContent', content.ned);
         this.setupIframe();
         break;
-      case 'readResult':
-        // @ts-ignore
-        const FS = this.iframe.contentWindow.FS;
-        // @ts-ignore
-        const jsonl = await readFile(
-          this.iframe.contentWindow,
-          '/result.jsonl'
-        );
-        // @ts-ignore
-        const output = await readFile(
-          this.iframe.contentWindow,
-          '/result.output'
-        );
+      case 'readResult': {
+        const jsonl = await readFile(iframeWindow, '/result.jsonl');
+        const output = await readFile(iframeWindow, '/result.output');
         this.send({ jsonl, output }, (m: any) =>
           console.log('model load callback', m)
         );
         break;
+      }
     }
   }
 
@@ -161,15 +149,19 @@ export class QuispIFrameModel extends DOMWidgetModel {
 
 export class QuispIFrameView extends DOMWidgetView {
   model: QuispIFrameModel;
-  initialize() {}
+  initialize() {
+    console.log('view initialized');
+  }
 
   render() {
     this.el.classList.add('custom-widget');
-    if (this.el.children.length == 0) {
+    if (this.el.children.length === 0) {
       const iframe = this.model.useIframe(this.cid);
       if (iframe) {
         this.el.appendChild(iframe);
-        this.model.send({ state_change: 'rendered' }, () => {});
+        this.model.send({ state_change: 'rendered' }, () => {
+          console.log('rendered');
+        });
       } else {
         this.el.textContent = 'see other view';
       }

@@ -11,6 +11,8 @@ class Qtenv {
 }
 
 class MainWindow {
+  runSimulation: (mode: RunMode) => void;
+  stopSimulation: () => void;
 }
 
 interface Window {
