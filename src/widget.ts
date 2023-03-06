@@ -97,17 +97,22 @@ export class QuispIFrameModel extends DOMWidgetModel {
     console.log('setupIframe: ', this.model_id);
     const nedContent = this.get('nedContent');
     const iniContent = this.get('iniContent');
+    const isGUI = this.get('is_gui');
     const source = generateSource(
       this.model_id,
       wasmUrl,
       emscriptenModuleUrl,
       packageDataUrl,
+      isGUI,
       nedContent,
       iniContent
     );
     this.iframe.srcdoc = `<canvas id="main"><script>${source}</script>`;
     this.iframe.style.width = '100%';
     this.iframe.style.height = '897px';
+    if (!isGUI) {
+      this.iframe.style.display = 'none';
+    }
     this.set('qtenv_ready', false);
     this.save_changes();
   }

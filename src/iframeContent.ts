@@ -97,6 +97,7 @@ export const generateSource = (
   wasmUrl: string,
   emscriptenModuleUrl: string,
   packageDataUrl: string,
+  isGUI: boolean,
   nedContent = '',
   iniContent: string = DEFAULT_INI_CONTENT
 ) => `
@@ -104,6 +105,7 @@ export const generateSource = (
       window.qtenvSkipRunSelection = true;
       const nedContent = \`${nedContent}\`;
       const iniContent = \`${iniContent}\`;
+      const isGUI = ${isGUI};
       const canvas = document.getElementById("main");
       canvas.style.width = '100%';
       canvas.style.height = '100%';
@@ -159,24 +161,35 @@ export const generateSource = (
         }, 100);
         const args = [
           '-m', /* merge stderr into stdout */
-          '-u', 'Qtenv',  /* ui */
+          '-u', '${isGUI ? 'Qtenv' : 'Cmdenv'}',  /* ui */
+          ${isGUI ? null : '"--cmdenv-express-mode=true"'},
+
           '-n', './networks:./channels:./modules', /* .ned file search path */
           '-f', './networks/omnetpp.ini', /* config file */
           '-c', 'Custom',
           '-r', '0',
           '--image-path=/quisp/images',
-        ];
+        ].filter(Boolean);
         console.log(JSON.stringify(args));
 
-        self.eval(
-          emscriptenSource.substring(
-            emscriptenSource.lastIndexOf('arguments_=['),
-            -1
-          ) +
-            'arguments_=' +
-            JSON.stringify(args) +
-            ';'
-        );
+        const start = () => {
+          self.eval(
+            emscriptenSource.substring(
+              emscriptenSource.lastIndexOf('arguments_=['),
+              -1
+            ) +
+              'arguments_=' +
+              JSON.stringify(args) +
+              ';'
+          );
+        };
+        if (isGUI) start();
+        else window.start = start;
+        window.addEventListener("message", (e) => {
+          if (e.data && e.data.command === "run") {
+            start();
+          }
+        })
       })
       function loadWasm() {
         const resp = fetch("${wasmUrl}");
