@@ -39,9 +39,9 @@ class Network:
         for c in self.quantum_channels:
             if c.option.link_type is LinkType.MIM:
                 ned_str += f"""
-        {c.option.bsa_node_name}: HOM {{
+        {c.option.bsa_node_name}: BSANode {{
             address = {c.option.bsa_node_addr};
-            @display("i=device/device");
+            @display("i=BSA");
         }}"""
         return ned_str
 

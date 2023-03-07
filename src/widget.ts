@@ -14,7 +14,7 @@ import { generateSource } from './iframeContent';
 import '../css/widget.css';
 
 const baseUrl =
-  'https://aqua.sfc.wide.ad.jp/quisp-online/jupyter-quisp-widget/';
+  'https://aqua.sfc.wide.ad.jp/quisp-online/v0.3.0/';
 // const baseUrl = 'http://localhost:8000/';
 const wasmUrl = baseUrl + 'quisp.wasm';
 const emscriptenModuleUrl = baseUrl + 'quisp.js';

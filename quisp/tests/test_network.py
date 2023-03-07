@@ -39,9 +39,9 @@ network SimpleTestNetwork {
             @display("i=COMP");
             is_initiator = false;
         }
-        BSA1_2: HOM {
+        BSA1_2: BSANode {
             address = 10000;
-            @display("i=device/device");
+            @display("i=BSA");
         }
     connections:
         qnode1.port++ <--> ClassicalChannel {  distance = 10.0km; } <--> BSA1_2.port++;

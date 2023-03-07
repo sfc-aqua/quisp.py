@@ -29,7 +29,7 @@ class QuispWidget(DOMWidget):
     _view_module_version = Unicode(module_version).tag(sync=True)
 
     value = Unicode("Hello World").tag(sync=True)
-    qtenv_ready =  Bool(False).tag(sync=True)
+    qtenv_ready = Bool(False).tag(sync=True)
     is_gui = Bool(True).tag(sync=True)
 
     def __init__(self, is_gui: bool = True):
@@ -66,4 +66,3 @@ class QuispWidget(DOMWidget):
 
     def readResult(self):
         self.send({"msg": "readResult"})
-
