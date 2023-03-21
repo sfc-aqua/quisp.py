@@ -1295,9 +1295,9 @@
     lodash "^4.17.4"
 
 "@jupyterlab/builder@^3.0.0":
-  version "3.6.1"
-  resolved "https://registry.yarnpkg.com/@jupyterlab/builder/-/builder-3.6.1.tgz#a04bf0312e8679d1f452c27fee2554ba4a6af3f5"
-  integrity sha512-LvHQe6InEXJisEcvAdvSFbEEl8OhTjxBSNz7MrjRB+Ur+Qs898dg8QhDH9Ad5mgK3uh4nEN1BDq9W7C/NomqoA==
+  version "3.6.2"
+  resolved "https://registry.yarnpkg.com/@jupyterlab/builder/-/builder-3.6.2.tgz#910727b6daa881b1a9cc563362c973f5bd91e142"
+  integrity sha512-xn6zej5slJLoB6bldq7F+F2FAue5mQQ9djVtmcLuLxyhR8lPSaDqVkfCnHp62XlFxwOFm4YIMCV4ip6W8ug/Fw==
   dependencies:
     "@lumino/algorithm" "^1.9.0"
     "@lumino/application" "^1.31.3"
