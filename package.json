@@ -49,7 +49,7 @@
     "watch:labextension": "jupyter labextension watch ."
   },
   "dependencies": {
-    "@jupyter-widgets/base": "6.0.2"
+    "@jupyter-widgets/base": "6.0.3"
   },
   "devDependencies": {
     "@babel/core": "^7.5.0",

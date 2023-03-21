@@ -1279,10 +1279,10 @@
     base64-js "^1.2.1"
     sanitize-html "^2.3"
 
-"@jupyter-widgets/base@6.0.2", "@jupyter-widgets/base@^6.0.2":
-  version "6.0.2"
-  resolved "https://registry.yarnpkg.com/@jupyter-widgets/base/-/base-6.0.2.tgz#ee6e614eb70f2593fce61eea8731217d869c5a2a"
-  integrity sha512-CIVjSTrqQFzkg9VCdDjrjDqwbba3eZfNigCPFSuKmMVXc+ATAOFczOv9/9uaCPzQ+E+0g6SOLhJ25SpKB0cl9g==
+"@jupyter-widgets/base@6.0.3", "@jupyter-widgets/base@^6.0.2":
+  version "6.0.3"
+  resolved "https://registry.yarnpkg.com/@jupyter-widgets/base/-/base-6.0.3.tgz#b72d335b1b94a46a414043c641ca74489d2b132b"
+  integrity sha512-UJ35p9o6f3Qp2t0UByfz76QF+o5t5WLlnzUStnBNbkqMxmZ0UfE4xG6HYT5xJ7CDhphTxWPvdtKlNyGh934Khw==
   dependencies:
     "@jupyterlab/services" "^6.0.0"
     "@lumino/coreutils" "^1.11.1"
