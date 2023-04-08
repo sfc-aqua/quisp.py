@@ -3,3 +3,4 @@ from .qnode import QNode
 from .types import LinkType
 from .channel import ChannelOption
 from .config import Config
+from .qnode_addr import QNodeAddr

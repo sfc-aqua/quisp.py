@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING, Optional
 from dataclasses import dataclass
 from .types import LinkType
+from .qnode_addr import QNodeAddr
 
 if TYPE_CHECKING:
     from .network import Network
@@ -14,7 +15,7 @@ class ChannelOption:
     classical_channel_distance: float = 20.0
     link_type: LinkType = LinkType.MIM
     bsa_node_name: Optional[str] = None
-    bsa_node_addr: Optional[int] = None
+    bsa_node_addr: Optional[QNodeAddr] = None
 
 
 class ClassicalChannel:

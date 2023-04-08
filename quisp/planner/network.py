@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING, List
 from .types import LinkType
+from .qnode_addr import QNodeAddr
 
 if TYPE_CHECKING:
     from .qnode import QNode
@@ -40,7 +41,7 @@ class Network:
             if c.option.link_type is LinkType.MIM:
                 ned_str += f"""
         {c.option.bsa_node_name}: BSANode {{
-            address = {c.option.bsa_node_addr};
+            address = "{c.option.bsa_node_addr}";
             @display("i=BSA");
         }}"""
         return ned_str
@@ -57,8 +58,10 @@ class Network:
         for i, c in enumerate(self.quantum_channels):
             opt = c.option
             if opt.link_type is LinkType.MIM:
-                opt.bsa_node_addr = i + 10000
-                opt.bsa_node_name = f"BSA{c.qnode1.addr}_{c.qnode2.addr}"
+                opt.bsa_node_addr = QNodeAddr(0, i + 10000)
+                opt.bsa_node_name = f"BSA{c.qnode1.addr}_{c.qnode2.addr}".replace(
+                    ".", "_"
+                )
         connections = self.dump_connections()
         qnodes = self.dump_qnodes()
         return """

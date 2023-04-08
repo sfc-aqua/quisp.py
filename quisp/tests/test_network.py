@@ -1,13 +1,15 @@
 import pytest
 
 from ..planner.network import Network
-from ..planner.qnode import QNode
+from ..planner.qnode import QNode, QNodeAddr
 
 
 def test_simple_network():
     network = Network("SimpleTestNetwork")
-    qnode1 = QNode(name="qnode1", network=network, is_initiator=True)
-    qnode2 = QNode(name="qnode2", network=network)
+    qnode1 = QNode(
+        name="qnode1", network=network, addr=QNodeAddr(1, 1), is_initiator=True
+    )
+    qnode2 = QNode(name="qnode2", network=network, addr=QNodeAddr(1, 2))
     qnode1.connect(qnode2)
     assert len(network.quantum_channels) == 1
     assert len(network.classical_channels) == 1
@@ -28,26 +30,26 @@ network SimpleTestNetwork {
         logger: Logger;
 
         qnode1: QNode {
-            address = 1;
+            address = "1.1";
             node_type = "EndNode";
             @display("i=COMP");
             is_initiator = true;
         }
         qnode2: QNode {
-            address = 2;
+            address = "1.2";
             node_type = "EndNode";
             @display("i=COMP");
             is_initiator = false;
         }
-        BSA1_2: BSANode {
+        BSA1_1_1_2: BSANode {
             address = 10000;
             @display("i=BSA");
         }
     connections:
-        qnode1.port++ <--> ClassicalChannel {  distance = 10.0km; } <--> BSA1_2.port++;
-        BSA1_2.port++ <--> ClassicalChannel {  distance = 10.0km; } <--> qnode2.port++;
-        qnode1.quantum_port++ <--> QuantumChannel {  distance = 10.0km; } <--> BSA1_2.quantum_port++;
-        BSA1_2.quantum_port++ <--> QuantumChannel {  distance = 10.0km; } <--> qnode2.quantum_port++;
+        qnode1.port++ <--> ClassicalChannel {  distance = 10.0km; } <--> BSA1_1_1_2.port++;
+        BSA1_1_1_2.port++ <--> ClassicalChannel {  distance = 10.0km; } <--> qnode2.port++;
+        qnode1.quantum_port++ <--> QuantumChannel {  distance = 10.0km; } <--> BSA1_1_1_2.quantum_port++;
+        BSA1_1_1_2.quantum_port++ <--> QuantumChannel {  distance = 10.0km; } <--> qnode2.quantum_port++;
 }
 """
     assert network.dump() == expected
