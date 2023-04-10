@@ -34,7 +34,12 @@ class Network:
 
     def dump_qnodes(self) -> str:
         ned_str = ""
+        possible_recipients = [
+            qnode.addr for qnode in self.qnodes if qnode.is_recipient
+        ]
         for qnode in self.qnodes:
+            if qnode.is_initiator:
+                qnode.possible_recipients = possible_recipients
             ned_str += qnode.dump()
 
         for c in self.quantum_channels:
@@ -58,7 +63,8 @@ class Network:
         for i, c in enumerate(self.quantum_channels):
             opt = c.option
             if opt.link_type is LinkType.MIM:
-                opt.bsa_node_addr = QNodeAddr(0, i + 10000)
+                network_part = c.qnode1.addr.network_part
+                opt.bsa_node_addr = QNodeAddr(network_part, i + 100)
                 opt.bsa_node_name = f"BSA{c.qnode1.addr}_{c.qnode2.addr}".replace(
                     ".", "_"
                 )

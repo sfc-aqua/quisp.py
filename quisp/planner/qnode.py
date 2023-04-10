@@ -12,6 +12,7 @@ class QNode:
     channels: List["ClassicalChannel"]
     addr: "QNodeAddr"
     available_addresses: List["QNodeAddr"]
+    possible_recipients: List["QNodeAddr"] = []
     is_initiator: bool
     is_recipient: bool
 
@@ -41,12 +42,23 @@ class QNode:
     def dump_available_addresses(self) -> str:
         return f"[{', '.join(map(str,self.available_addresses))}]"
 
+    def dump_possible_recipients(self) -> str:
+        addr_str_list = map(lambda a: f'"{str(a)}"', self.possible_recipients)
+        return f"[{', '.join(addr_str_list)}]"
+
     def dump(self) -> str:
         return f"""
         {self.name}: QNode {{
             address = "{self.addr}";
-            available_addresses = {self.dump_available_addresses()};
-            node_type = "{'EndNode' if self.is_recipient or self.is_initiator else 'Router'}";
+            available_addresses = {addr_list_to_str(self.available_addresses)};
+            possible_recipients = {(addr_list_to_str(self.possible_recipients))};
+            node_type = "{'EndNode' if self.is_recipient or self.is_initiator or len(self.available_addresses) > 0 else 'Router'}";
             @display("i=COMP");
             is_initiator = {"true" if self.is_initiator else "false"};
+            has_specific_recipients = {"true" if self.is_initiator else "false"};
         }}"""
+
+
+def addr_list_to_str(addrs: "List[QNodeAddr]") -> str:
+    addr_str_list = map(lambda a: f'"{str(a)}"', addrs)
+    return f"[{', '.join(addr_str_list)}]"
