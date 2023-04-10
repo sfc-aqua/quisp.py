@@ -1,7 +1,8 @@
-from typing import Optional, List
+from typing import Optional, List, Dict
 import asyncio, re, os
 from asyncio.subprocess import Process
 from enum import Enum
+import pandas as pd
 
 from quisp.planner.config import Config
 from quisp.planner.network import Network
@@ -31,6 +32,9 @@ class NativeSimulator:
     running: bool = False
     lock: asyncio.Lock
     status: WorkerStatus = WorkerStatus.WAITING_FOR_TASK
+    error_messages: str = ""
+    config: "Optional[Config]"
+    df: "Optional[pd.DataFrame]"
 
     def __init__(self, working_dir):
         self.working_dir = working_dir
@@ -41,6 +45,7 @@ class NativeSimulator:
             config = Config(network.name)
         self.config_name = config.config_name
         self.ini_file_path = f"{self.config_name}.ini"
+        self.config = config
 
         with open(os.path.join(self.working_dir, self.ini_file_path), "w") as file:
             file.write(config.dump())
@@ -49,6 +54,31 @@ class NativeSimulator:
             os.path.join(self.working_dir, "networks", "test_network.ned"), "w"
         ) as file:
             file.write(network.dump())
+
+    def clean_result(self):
+        with open(os.path.join(self.working_dir, "result.jsonl"), "w") as f:
+            f.write("")
+
+        with open(os.path.join(self.working_dir, "result.output"), "w") as f:
+            f.write("")
+
+        with open(os.path.join(self.working_dir, "result.output_dm"), "w") as f:
+            f.write("")
+
+    def read_result(self):
+        """
+        read results from jsonl file and channel info from stdout. this method doesn't collect the density matrix
+        """
+        self.results = dict()
+        # read the stdout
+        for result in [parse_output(l) for l in self.output.split("\n")]:
+            if not result:
+                continue
+            self.results[result["name"]] = result
+
+        self.df = pd.read_json(
+            os.path.join(self.working_dir, "result.jsonl"), orient="records", lines=True
+        )
 
     async def set_status(self, status: "WorkerStatus") -> None:
         async with self.lock:
@@ -128,7 +158,8 @@ class NativeSimulator:
             "-i",
             self.ned_path,
         ]
-        print(commands)
+        self.clean_result()
+        self.error_messages = ""
         self.proc = await asyncio.create_subprocess_shell(
             "/usr/bin/time -p -- " + " ".join(commands),
             stdout=asyncio.subprocess.PIPE,
@@ -136,6 +167,7 @@ class NativeSimulator:
             cwd=self.working_dir,
         )
         if self.proc.stdout is None or self.proc.stderr is None:
+            print("no stdout or stderr")
             return
 
         while True:
@@ -145,3 +177,66 @@ class NativeSimulator:
             await self.readStderr()
             await asyncio.sleep(0.1)
         await self.proc.communicate()
+        if self.error_messages:
+            print(self.error_messages)
+            raise RuntimeError(self.error_messages)
+        print("finished")
+
+
+def parse_output(s: str) -> "Optional[Dict]":
+    """read one line of simulation output and parse it if it can be.
+
+    >>> parse_output("Repeater1[0]<-->QuantumChannel{cost=0.00795483;distance=2.5km;fidelity=0.647462;bellpair_per_sec=299.875;}<-->EndNode2[0]; Fidelity=0.647462; Xerror=-0.00802559; Zerror=0.352538; Yerror=0.00802559")
+    {'name': 'Repeater1[0]<-->EndNode2[0]', 'channel': {'cost': 0.00795483, 'distance': '2.5km', 'fidelity': 0.647462, 'bellpair_per_sec': 299.875}, 'data': {'Fidelity': 0.647462, 'Xerror': -0.00802559, 'Zerror': 0.352538, 'Yerror': 0.00802559}}
+
+    """
+    if not "<-->" in s:
+        return None
+    channel_info, *rest = s.split(" ")
+    print(channel_info.split("<-->"))
+    node1, channel, node2 = channel_info.split("<-->")
+    return {
+        "name": f"{node1}<-->{remove_end_semi(node2)}",
+        "channel": parse_object(channel[15:-2].split(";")),
+        "data": parse_object(rest),
+    }
+
+
+def remove_end_semi(s: str) -> str:
+    """remove the last semicolon if exists.
+
+    >>> remove_end_semi("test;")
+    'test'
+
+    >>> remove_end_semi("test")
+    'test'
+    """
+
+    if s.endswith(";"):
+        return s[:-1]
+    return s
+
+
+def parse_object(s: "List[str]") -> "Dict[str, float]":
+    """parse object literal from simulation results.
+    the values are converted into float if it can be.
+
+    >>> parse_object(["Fidelity=0.647462","Xerror=-0.00802559", " Zerror=0.352538", "Yerror=0.00802559;"])
+    {'Fidelity': 0.647462, 'Xerror': -0.00802559, 'Zerror': 0.352538, 'Yerror': 0.00802559}
+
+    >>> parse_object("cost=0.00795483;distance=2.5km;fidelity=0.647462;bellpair_per_sec=299.875;".split(";"))
+    {'cost': 0.00795483, 'distance': '2.5km', 'fidelity': 0.647462, 'bellpair_per_sec': 299.875}
+    """
+    obj = dict()
+    for kv in s:
+        if not kv:
+            continue
+        k, v = kv.split("=")
+        k = k.strip(" ")
+        v = remove_end_semi(v)
+        try:
+            obj[k] = float(v)
+        except ValueError:
+            obj[k] = v
+
+    return obj

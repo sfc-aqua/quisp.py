@@ -6,7 +6,15 @@
 
 from .widget import QuispWidget
 from ._version import __version__, version_info
-from .planner import Network, QNode, LinkType, ChannelOption, QNodeAddr, Config
+from .planner import (
+    Network,
+    QNode,
+    LinkType,
+    ChannelOption,
+    QNodeAddr,
+    Config,
+    NetworkBuilder,
+)
 from .worker import NativeSimulator
 
 
