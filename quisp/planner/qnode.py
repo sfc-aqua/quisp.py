@@ -39,13 +39,6 @@ class QNode:
         self.network.add_classical_channel(ClassicalChannel(self, qnode, option))
         self.network.add_quantum_channel(QuantumChannel(self, qnode, option))
 
-    def dump_available_addresses(self) -> str:
-        return f"[{', '.join(map(str,self.available_addresses))}]"
-
-    def dump_possible_recipients(self) -> str:
-        addr_str_list = map(lambda a: f'"{str(a)}"', self.possible_recipients)
-        return f"[{', '.join(addr_str_list)}]"
-
     def dump(self) -> str:
         return f"""
         {self.name}: QNode {{
