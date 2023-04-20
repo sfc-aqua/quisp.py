@@ -35,10 +35,12 @@ class NativeSimulator:
     error_messages: str = ""
     config: "Optional[Config]"
     df: "Optional[pd.DataFrame]"
+    network: "Network"
 
     def __init__(self, working_dir):
         self.working_dir = working_dir
         self.lock = asyncio.Lock()
+        self.df = pd.DataFrame()
 
     def load(self, network: "Network", config: "Optional[Config]" = None):
         if config is None:
@@ -46,6 +48,7 @@ class NativeSimulator:
         self.config_name = config.config_name
         self.ini_file_path = f"{self.config_name}.ini"
         self.config = config
+        self.network = network
 
         with open(os.path.join(self.working_dir, self.ini_file_path), "w") as file:
             file.write(config.dump())
@@ -79,6 +82,7 @@ class NativeSimulator:
         self.df = pd.read_json(
             os.path.join(self.working_dir, "result.jsonl"), orient="records", lines=True
         )
+        self.df.astype({"simtime":"float32", "actual_dest_addr": "string", "actual_src_addr":"string"})
 
     async def set_status(self, status: "WorkerStatus") -> None:
         async with self.lock:
@@ -97,6 +101,7 @@ class NativeSimulator:
             buf = (await self.proc.stdout.readline()).decode().strip()
             if not buf:
                 break
+            # print(buf)
             if buf.startswith("<!> Error"):
                 await self.set_status(WorkerStatus.ERROR)
             if buf.startswith("End."):
@@ -125,6 +130,7 @@ class NativeSimulator:
     async def readStderr(self):
         while len(self.proc.stderr._buffer) > 0:  # type: ignore
             buf = (await self.proc.stderr.readline()).decode().strip()
+            print(buf)
             # parse time command output
             if buf.startswith("real"):
                 self.real_time = parse_time(buf.split()[1])
@@ -158,10 +164,12 @@ class NativeSimulator:
             "-i",
             self.ned_path,
         ]
+        print(" ".join(commands))
         self.clean_result()
         self.error_messages = ""
         self.proc = await asyncio.create_subprocess_shell(
-            "/usr/bin/time -p -- " + " ".join(commands),
+            # "/usr/bin/time -p -- " + " ".join(commands),
+            " ".join(commands),
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,
             cwd=self.working_dir,
