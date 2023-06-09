@@ -1,12 +1,18 @@
+from typing import Optional
+
+
 class Config:
     network_name: str
     config_name: str
     seed_set: int
     sim_time_limit: float
 
-    def __init__(self, network_name: str, config_name: str = "Custom") -> None:
+    def __init__(self, network_name: str, config_name: "Optional[str]" = None) -> None:
         self.network_name = network_name
-        self.config_name = config_name
+        if config_name is None:
+            self.config_name = network_name
+        else:
+            self.config_name = config_name
         self.seed_set = 0
         self.sim_time_limit = 100
 

@@ -1,9 +1,9 @@
 from typing import Optional, List, Dict
-import asyncio, re, os
+import asyncio, re, os, glob, shutil, pickle
 from asyncio.subprocess import Process
 from enum import Enum
 import pandas as pd
-
+from dataclasses import dataclass
 from quisp.planner.config import Config
 from quisp.planner.network import Network
 
@@ -24,8 +24,45 @@ def parse_time(s: str) -> float:
     return float(s)
 
 
+class SerializableSimulatorObject:
+    def __init__(self, sim: "NativeSimulator") -> None:
+        self.ned_path = sim.ned_path
+        self.output = sim.output
+        self.status = sim.status
+        self.error_messages = sim.error_messages
+        self.config = sim.config
+        self.df = sim.df
+        self.network = sim.network
+        self.working_dir = sim.working_dir
+        self.result_root_dir = sim.result_root_dir
+        self.result_dir = sim.result_dir
+        self.config_name = sim.config_name
+        self.ini_file_name = sim.ini_file_name
+        self.ini_file_path = sim.ini_file_path
+        self.ned_file_name = sim.ned_file_name
+        self.ned_file_path = sim.ned_file_path
+        self.finished = sim.finished
+
+    def construct(self) -> "NativeSimulator":
+        sim = NativeSimulator(self.working_dir, self.result_root_dir)
+        sim.ned_path = self.ned_path
+        sim.output = self.output
+        sim.status = self.status
+        sim.error_messages = self.error_messages
+        sim.config = self.config
+        sim.df = self.df
+        sim.network = self.network
+        sim.result_dir = self.result_dir
+        sim.config_name = self.config_name
+        sim.ini_file_path = self.ini_file_path
+        sim.ini_file_name = self.ini_file_name
+        sim.ned_file_name = self.ned_file_name
+        sim.ned_file_path = self.ned_file_path
+        sim.finished = self.finished
+        return sim
+
+
 class NativeSimulator:
-    quisp_path: str
     ned_path: str = "modules:channels:networks"
     proc: "Optional[Process]"
     output: str = ""
@@ -36,58 +73,124 @@ class NativeSimulator:
     config: "Optional[Config]"
     df: "Optional[pd.DataFrame]"
     network: "Network"
+    working_dir: "str"
+    result_root_dir: "str"
+    result_dir: "str"
+    finished: "bool" = False
 
-    def __init__(self, working_dir):
+    def __init__(self, working_dir, result_root_dir=None):
+        """"""
         self.working_dir = working_dir
+        if result_root_dir is not None:
+            self.result_root_dir = result_root_dir
+        else:
+            self.result_root_dir = os.path.join(self.working_dir, "results")
+
         self.lock = asyncio.Lock()
-        self.df = pd.DataFrame()
+        self.df = None
 
     def load(self, network: "Network", config: "Optional[Config]" = None):
         if config is None:
             config = Config(network.name)
         self.config_name = config.config_name
-        self.ini_file_path = f"{self.config_name}.ini"
+        self.result_dir = os.path.join(self.result_root_dir, self.config_name)
+        if not os.path.exists(self.result_dir):
+            os.makedirs(self.result_dir)
+
+        self.ini_file_name = f"{self.config_name}.ini"
+        self.ini_file_path = os.path.join(self.result_dir, self.ini_file_name)
+        self.ned_file_name = f"network_{self.config_name}.ned"
+        self.ned_file_path = os.path.join(
+            self.result_dir, "networks", self.ned_file_name
+        )
+        print(self.ini_file_path)
+        ned_dir = self.result_dir
         self.config = config
         self.network = network
 
-        with open(os.path.join(self.working_dir, self.ini_file_path), "w") as file:
+        ned_files = glob.glob(
+            os.path.join(self.working_dir, "**/*.ned"), recursive=True
+        )
+
+        for ned_file in ned_files:
+            if ned_file.startswith(self.result_root_dir):
+                continue
+            os.makedirs(
+                os.path.dirname(
+                    os.path.join(ned_dir, ned_file[len(self.working_dir) + 1 :])
+                ),
+                exist_ok=True,
+            )
+            shutil.copy(
+                ned_file, os.path.join(ned_dir, ned_file[len(self.working_dir) + 1 :])
+            )
+        with open(self.ini_file_path, "w") as file:
             file.write(config.dump())
 
-        with open(
-            os.path.join(self.working_dir, "networks", "test_network.ned"), "w"
-        ) as file:
+        with open(self.ned_file_path, "w") as file:
             file.write(network.dump())
+        shutil.copy(os.path.join(self.working_dir, "quisp"), self.result_dir)
 
-    def clean_result(self):
-        with open(os.path.join(self.working_dir, "result.jsonl"), "w") as f:
-            f.write("")
-
-        with open(os.path.join(self.working_dir, "result.output"), "w") as f:
-            f.write("")
-
-        with open(os.path.join(self.working_dir, "result.output_dm"), "w") as f:
-            f.write("")
-
-    def read_result(self):
-        """
-        read results from jsonl file and channel info from stdout. this method doesn't collect the density matrix
-        """
-        self.results = dict()
-        # read the stdout
-        for result in [parse_output(l) for l in self.output.split("\n")]:
-            if not result:
-                continue
-            self.results[result["name"]] = result
-
-        self.df = pd.read_json(
-            os.path.join(self.working_dir, "result.jsonl"), orient="records", lines=True
+    async def run(self):
+        commands = [
+            "./quisp",
+            "-u",
+            "Cmdenv",
+            "--cmdenv-express-mode=true",
+            "-c",
+            self.config_name,
+            "-f",
+            self.ini_file_name,
+            "-i",
+            self.ned_path,
+        ]
+        print(" ".join(commands))
+        self.clean_result()
+        self.error_messages = ""
+        self.proc = await asyncio.create_subprocess_shell(
+            # "/usr/bin/time -p -- " + " ".join(commands),
+            " ".join(commands),
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
+            cwd=self.result_dir,
         )
-        self.df.astype({"simtime":"float32", "actual_dest_addr": "string", "actual_src_addr":"string"})
+        if self.proc.stdout is None or self.proc.stderr is None:
+            print("no stdout or stderr")
+            return
 
-    async def set_status(self, status: "WorkerStatus") -> None:
-        async with self.lock:
-            if self.status is not WorkerStatus.ERROR:
-                self.status = status
+        while True:
+            if self.has_buffer():
+                break
+            await self.readStdout()
+            await self.readStderr()
+            await asyncio.sleep(0.1)
+        await self.proc.communicate()
+        print("return code: ", self.proc.returncode)
+        if self.error_messages:
+            print(self.error_messages)
+            self.finished = True
+            self.save_to_pickle()
+            raise RuntimeError(self.error_messages)
+        print("finished")
+        self.finished = True
+        self.save_to_pickle()
+
+    def save_to_pickle(self):
+        with open(os.path.join(self.result_dir, "sim.pickle"), "wb") as f:
+            import pickle
+
+            pickle.dump(SerializableSimulatorObject(self), f)
+
+    @staticmethod
+    def load_from_pickle(dir_str: str) -> "NativeSimulator":
+        pickle_path = (
+            dir_str
+            if dir_str.endswith(".pickle")
+            else os.path.join(dir_str, "sim.pickle")
+        )
+        with open(pickle_path, "rb") as f:
+            obj = pickle.load(f)
+            return obj.construct()
 
     async def readStdout(self):
         lines: "List[str]" = []
@@ -127,6 +230,43 @@ class NativeSimulator:
                 lines.append(re.sub(r"\s+", ",", buf))
             self.output += buf + "\n"
 
+    def clean_result(self):
+        with open(os.path.join(self.result_dir, "result.jsonl"), "w") as f:
+            f.write("")
+
+        with open(os.path.join(self.result_dir, "result.output"), "w") as f:
+            f.write("")
+
+        with open(os.path.join(self.result_dir, "result.output_dm"), "w") as f:
+            f.write("")
+
+    def read_result(self):
+        """
+        read results from jsonl file and channel info from stdout. this method doesn't collect the density matrix
+        """
+        self.results = dict()
+        # read the stdout
+        for result in [parse_output(l) for l in self.output.split("\n")]:
+            if not result:
+                continue
+            self.results[result["name"]] = result
+
+        self.df = pd.read_json(
+            os.path.join(self.result_dir, "result.jsonl"), orient="records", lines=True
+        )
+        self.df.astype(
+            {
+                "simtime": "float32",
+                "actual_dest_addr": "string",
+                "actual_src_addr": "string",
+            }
+        )
+
+    async def set_status(self, status: "WorkerStatus") -> None:
+        async with self.lock:
+            if self.status is not WorkerStatus.ERROR:
+                self.status = status
+
     async def readStderr(self):
         while len(self.proc.stderr._buffer) > 0:  # type: ignore
             buf = (await self.proc.stderr.readline()).decode().strip()
@@ -150,45 +290,6 @@ class NativeSimulator:
         if p.stdout is None or p.stderr is None:
             return False
         return p.stdout.at_eof() and p.stderr.at_eof()
-
-    async def run(self):
-        commands = [
-            "./quisp",
-            "-u",
-            "Cmdenv",
-            "--cmdenv-express-mode=true",
-            "-c",
-            self.config_name,
-            "-f",
-            self.ini_file_path,
-            "-i",
-            self.ned_path,
-        ]
-        print(" ".join(commands))
-        self.clean_result()
-        self.error_messages = ""
-        self.proc = await asyncio.create_subprocess_shell(
-            # "/usr/bin/time -p -- " + " ".join(commands),
-            " ".join(commands),
-            stdout=asyncio.subprocess.PIPE,
-            stderr=asyncio.subprocess.PIPE,
-            cwd=self.working_dir,
-        )
-        if self.proc.stdout is None or self.proc.stderr is None:
-            print("no stdout or stderr")
-            return
-
-        while True:
-            if self.has_buffer():
-                break
-            await self.readStdout()
-            await self.readStderr()
-            await asyncio.sleep(0.1)
-        await self.proc.communicate()
-        if self.error_messages:
-            print(self.error_messages)
-            raise RuntimeError(self.error_messages)
-        print("finished")
 
 
 def parse_output(s: str) -> "Optional[Dict]":
